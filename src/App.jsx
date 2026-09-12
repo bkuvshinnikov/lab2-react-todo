@@ -12,6 +12,7 @@ function App() {
     const newTodo = {
       id: Date.now(),
       text: task,
+      completed: false,
     }
 
     setTodos([...todos, newTodo])
@@ -20,6 +21,16 @@ function App() {
 
   const deleteTodo = (id) => {
     setTodos(todos.filter(todo => todo.id !== id))
+  }
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo =>
+        todo.id === id
+          ? { ...todo, completed: !todo.completed }
+          : todo
+      )
+    )
   }
 
   return (
@@ -40,7 +51,21 @@ function App() {
       <ul>
         {todos.map(todo => (
           <li key={todo.id}>
-            {todo.text}
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => toggleTodo(todo.id)}
+            />
+
+            <span
+              style={{
+                textDecoration: todo.completed
+                  ? 'line-through'
+                  : 'none',
+              }}
+            >
+              {todo.text}
+            </span>
 
             <button onClick={() => deleteTodo(todo.id)}>
               Delete
