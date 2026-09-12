@@ -42,11 +42,21 @@ function App() {
         placeholder="Enter a task"
         value={task}
         onChange={(event) => setTask(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            addTodo()
+          }
+        }}
       />
 
       <button onClick={addTodo}>
         Add
       </button>
+
+      <p>
+        Total: {todos.length} | Completed:{' '}
+        {todos.filter(todo => todo.completed).length}
+      </p>
 
       <ul>
         {todos.map(todo => (
