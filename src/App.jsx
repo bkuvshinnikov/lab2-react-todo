@@ -1,8 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 function App() {
   const [task, setTask] = useState('')
-  const [todos, setTodos] = useState([])
+
+  const [todos, setTodos] = useState(() => {
+    const savedTodos = localStorage.getItem('todos')
+
+    return savedTodos ? JSON.parse(savedTodos) : []
+  })
+
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(todos))
+  }, [todos])
 
   const addTodo = () => {
     if (task.trim() === '') {
