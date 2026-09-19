@@ -22,22 +22,16 @@ function App() {
   const [editingDueDate, setEditingDueDate] = useState('')
 
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'light'
+    return localStorage.getItem('theme') || 'dark'
   })
 
   const [todos, setTodos] = useState(() => {
     const savedTodos = localStorage.getItem('todos')
-
-    return savedTodos
-      ? JSON.parse(savedTodos)
-      : []
+    return savedTodos ? JSON.parse(savedTodos) : []
   })
 
   useEffect(() => {
-    localStorage.setItem(
-      'todos',
-      JSON.stringify(todos)
-    )
+    localStorage.setItem('todos', JSON.stringify(todos))
   }, [todos])
 
   useEffect(() => {
@@ -51,25 +45,15 @@ function App() {
 
     const checkStorageExpiration = () => {
       const now = Date.now()
-
-      const lastReset = Number(
-        localStorage.getItem(resetKey)
-      )
+      const lastReset = Number(localStorage.getItem(resetKey))
 
       if (!lastReset) {
-        localStorage.setItem(
-          resetKey,
-          now.toString()
-        )
-
+        localStorage.setItem(resetKey, now.toString())
         return
       }
 
-      const timePassed = now - lastReset
-
-      if (timePassed >= ONE_HOUR) {
+      if (now - lastReset >= ONE_HOUR) {
         localStorage.removeItem('todos')
-
         setTodos([])
 
         setEditingId(null)
@@ -78,10 +62,7 @@ function App() {
         setEditingCategory('work')
         setEditingDueDate('')
 
-        localStorage.setItem(
-          resetKey,
-          now.toString()
-        )
+        localStorage.setItem(resetKey, now.toString())
       }
     }
 
@@ -92,9 +73,7 @@ function App() {
       CHECK_INTERVAL
     )
 
-    return () => {
-      clearInterval(interval)
-    }
+    return () => clearInterval(interval)
   }, [])
 
   const addTodo = () => {
@@ -111,10 +90,7 @@ function App() {
       dueDate,
     }
 
-    setTodos([
-      ...todos,
-      newTodo,
-    ])
+    setTodos([...todos, newTodo])
 
     setTask('')
     setPriority('medium')
@@ -123,19 +99,14 @@ function App() {
   }
 
   const deleteTodo = (id) => {
-    setTodos(
-      todos.filter(todo => todo.id !== id)
-    )
+    setTodos(todos.filter(todo => todo.id !== id))
   }
 
   const toggleTodo = (id) => {
     setTodos(
       todos.map(todo =>
         todo.id === id
-          ? {
-              ...todo,
-              completed: !todo.completed,
-            }
+          ? { ...todo, completed: !todo.completed }
           : todo
       )
     )
@@ -143,20 +114,10 @@ function App() {
 
   const startEditing = (todo) => {
     setEditingId(todo.id)
-
     setEditingText(todo.text)
-
-    setEditingPriority(
-      todo.priority || 'medium'
-    )
-
-    setEditingCategory(
-      todo.category || 'work'
-    )
-
-    setEditingDueDate(
-      todo.dueDate || ''
-    )
+    setEditingPriority(todo.priority || 'medium')
+    setEditingCategory(todo.category || 'work')
+    setEditingDueDate(todo.dueDate || '')
   }
 
   const saveEdit = (id) => {
@@ -190,128 +151,70 @@ function App() {
   }
 
   const clearCompleted = () => {
-    setTodos(
-      todos.filter(todo => !todo.completed)
-    )
+    setTodos(todos.filter(todo => !todo.completed))
   }
 
   const isOverdue = (todo) => {
-    if (
-      !todo.dueDate ||
-      todo.completed
-    ) {
+    if (!todo.dueDate || todo.completed) {
       return false
     }
 
     const today = new Date()
+    today.setHours(0, 0, 0, 0)
 
-    today.setHours(
-      0,
-      0,
-      0,
-      0
-    )
-
-    const deadline = new Date(
-      `${todo.dueDate}T00:00:00`
-    )
+    const deadline = new Date(`${todo.dueDate}T00:00:00`)
 
     return deadline < today
   }
 
-  const getPriorityValue = (
-    priorityValue
-  ) => {
-    if (priorityValue === 'high') {
-      return 3
-    }
-
-    if (priorityValue === 'medium') {
-      return 2
-    }
-
+  const getPriorityValue = (priorityValue) => {
+    if (priorityValue === 'high') return 3
+    if (priorityValue === 'medium') return 2
     return 1
   }
 
   let visibleTodos = todos.filter(todo => {
-    if (
-      filter === 'active' &&
-      todo.completed
-    ) {
+    if (filter === 'active' && todo.completed) {
       return false
     }
 
-    if (
-      filter === 'completed' &&
-      !todo.completed
-    ) {
+    if (filter === 'completed' && !todo.completed) {
       return false
     }
 
     if (
       categoryFilter !== 'all' &&
-      (todo.category || 'work') !==
-        categoryFilter
+      (todo.category || 'work') !== categoryFilter
     ) {
       return false
     }
 
     return todo.text
       .toLowerCase()
-      .includes(
-        search.toLowerCase()
-      )
+      .includes(search.toLowerCase())
   })
 
-  visibleTodos = [
-    ...visibleTodos,
-  ].sort((a, b) => {
-    if (
-      sortBy === 'priority-high'
-    ) {
+  visibleTodos = [...visibleTodos].sort((a, b) => {
+    if (sortBy === 'priority-high') {
       return (
-        getPriorityValue(
-          b.priority || 'medium'
-        ) -
-        getPriorityValue(
-          a.priority || 'medium'
-        )
+        getPriorityValue(b.priority || 'medium') -
+        getPriorityValue(a.priority || 'medium')
       )
     }
 
-    if (
-      sortBy === 'priority-low'
-    ) {
+    if (sortBy === 'priority-low') {
       return (
-        getPriorityValue(
-          a.priority || 'medium'
-        ) -
-        getPriorityValue(
-          b.priority || 'medium'
-        )
+        getPriorityValue(a.priority || 'medium') -
+        getPriorityValue(b.priority || 'medium')
       )
     }
 
     if (sortBy === 'due-date') {
-      if (
-        !a.dueDate &&
-        !b.dueDate
-      ) {
-        return 0
-      }
+      if (!a.dueDate && !b.dueDate) return 0
+      if (!a.dueDate) return 1
+      if (!b.dueDate) return -1
 
-      if (!a.dueDate) {
-        return 1
-      }
-
-      if (!b.dueDate) {
-        return -1
-      }
-
-      return (
-        new Date(a.dueDate) -
-        new Date(b.dueDate)
-      )
+      return new Date(a.dueDate) - new Date(b.dueDate)
     }
 
     if (sortBy === 'newest') {
@@ -326,141 +229,138 @@ function App() {
   })
 
   return (
-    <div
-      className={`app-container ${theme}`}
-    >
-      <div className="todo-app">
-        <div className="header">
-          <h1>Task Manager</h1>
+    <div className={`app-container ${theme}`}>
+      <main className="todo-app">
+        <header className="header">
+          <div className="brand">
+            <div className="brand-icon">✓</div>
+
+            <div>
+              <span className="eyebrow">
+                PRODUCTIVITY DASHBOARD
+              </span>
+
+              <h1>Task Manager</h1>
+
+              <p className="subtitle">
+                Organize your day. Focus on what matters.
+              </p>
+            </div>
+          </div>
 
           <button
             className="theme-button"
             onClick={() =>
-              setTheme(
-                theme === 'light'
-                  ? 'dark'
-                  : 'light'
-              )
+              setTheme(theme === 'light' ? 'dark' : 'light')
             }
           >
-            {theme === 'light'
-              ? 'Dark mode'
-              : 'Light mode'}
+            <span className="theme-icon">
+              {theme === 'light' ? '☾' : '☀'}
+            </span>
+
+            {theme === 'light' ? 'Dark' : 'Light'}
           </button>
-        </div>
+        </header>
 
-        <TodoForm
-          task={task}
-          setTask={setTask}
-          priority={priority}
-          setPriority={setPriority}
-          category={category}
-          setCategory={setCategory}
-          dueDate={dueDate}
-          setDueDate={setDueDate}
-          addTodo={addTodo}
-        />
+        <section className="dashboard-section">
+          <TodoStats todos={todos} />
+        </section>
 
-        <TodoStats
-          todos={todos}
-        />
+        <section className="glass-panel create-section">
+          <div className="section-heading">
+            <div>
+              <span className="section-kicker">NEW TASK</span>
+              <h2>Create something</h2>
+            </div>
 
-        <TodoControls
-          search={search}
-          setSearch={setSearch}
-          categoryFilter={
-            categoryFilter
-          }
-          setCategoryFilter={
-            setCategoryFilter
-          }
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          filter={filter}
-          setFilter={setFilter}
-          hasCompleted={todos.some(
-            todo => todo.completed
+            <span className="keyboard-hint">
+              Press Enter ↵
+            </span>
+          </div>
+
+          <TodoForm
+            task={task}
+            setTask={setTask}
+            priority={priority}
+            setPriority={setPriority}
+            category={category}
+            setCategory={setCategory}
+            dueDate={dueDate}
+            setDueDate={setDueDate}
+            addTodo={addTodo}
+          />
+        </section>
+
+        <section className="glass-panel controls-panel">
+          <div className="section-heading">
+            <div>
+              <span className="section-kicker">WORKSPACE</span>
+              <h2>Your tasks</h2>
+            </div>
+
+            <span className="task-count">
+              {visibleTodos.length} visible
+            </span>
+          </div>
+
+          <TodoControls
+            search={search}
+            setSearch={setSearch}
+            categoryFilter={categoryFilter}
+            setCategoryFilter={setCategoryFilter}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            filter={filter}
+            setFilter={setFilter}
+            hasCompleted={todos.some(todo => todo.completed)}
+            clearCompleted={clearCompleted}
+          />
+        </section>
+
+        <section className="tasks-section">
+          <ul>
+            {visibleTodos.map(todo => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                editingId={editingId}
+                editingText={editingText}
+                setEditingText={setEditingText}
+                editingPriority={editingPriority}
+                setEditingPriority={setEditingPriority}
+                editingCategory={editingCategory}
+                setEditingCategory={setEditingCategory}
+                editingDueDate={editingDueDate}
+                setEditingDueDate={setEditingDueDate}
+                toggleTodo={toggleTodo}
+                startEditing={startEditing}
+                saveEdit={saveEdit}
+                cancelEdit={cancelEdit}
+                deleteTodo={deleteTodo}
+                isOverdue={isOverdue}
+              />
+            ))}
+          </ul>
+
+          {visibleTodos.length === 0 && (
+            <div className="empty-state">
+              <div className="empty-icon">✓</div>
+
+              <h3>Nothing here yet</h3>
+
+              <p>
+                Create a task or change your filters.
+              </p>
+            </div>
           )}
-          clearCompleted={
-            clearCompleted
-          }
-        />
+        </section>
 
-        <ul>
-          {visibleTodos.map(todo => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-
-              editingId={
-                editingId
-              }
-
-              editingText={
-                editingText
-              }
-
-              setEditingText={
-                setEditingText
-              }
-
-              editingPriority={
-                editingPriority
-              }
-
-              setEditingPriority={
-                setEditingPriority
-              }
-
-              editingCategory={
-                editingCategory
-              }
-
-              setEditingCategory={
-                setEditingCategory
-              }
-
-              editingDueDate={
-                editingDueDate
-              }
-
-              setEditingDueDate={
-                setEditingDueDate
-              }
-
-              toggleTodo={
-                toggleTodo
-              }
-
-              startEditing={
-                startEditing
-              }
-
-              saveEdit={
-                saveEdit
-              }
-
-              cancelEdit={
-                cancelEdit
-              }
-
-              deleteTodo={
-                deleteTodo
-              }
-
-              isOverdue={
-                isOverdue
-              }
-            />
-          ))}
-        </ul>
-
-        {visibleTodos.length === 0 && (
-          <p className="empty-message">
-            No tasks found.
-          </p>
-        )}
-      </div>
+        <footer className="footer">
+          <span>React Task Manager</span>
+          <span>•</span>
+          <span>Local-first productivity</span>
+        </footer>
+      </main>
     </div>
   )
 }
