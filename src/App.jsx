@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react'
 function App() {
   const [task, setTask] = useState('')
   const [filter, setFilter] = useState('all')
+  const [editingId, setEditingId] = useState(null)
+  const [editingText, setEditingText] = useState('')
 
   const [todos, setTodos] = useState(() => {
     const savedTodos = localStorage.getItem('todos')
-
     return savedTodos ? JSON.parse(savedTodos) : []
   })
 
@@ -41,6 +42,33 @@ function App() {
           : todo
       )
     )
+  }
+
+  const startEditing = (todo) => {
+    setEditingId(todo.id)
+    setEditingText(todo.text)
+  }
+
+  const saveEdit = (id) => {
+    if (editingText.trim() === '') {
+      return
+    }
+
+    setTodos(
+      todos.map(todo =>
+        todo.id === id
+          ? { ...todo, text: editingText.trim() }
+          : todo
+      )
+    )
+
+    setEditingId(null)
+    setEditingText('')
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditingText('')
   }
 
   const filteredTodos = todos.filter(todo => {
@@ -114,16 +142,61 @@ function App() {
               onChange={() => toggleTodo(todo.id)}
             />
 
-            <span className={todo.completed ? 'completed' : ''}>
-              {todo.text}
-            </span>
+            {editingId === todo.id ? (
+              <>
+                <input
+                  className="edit-input"
+                  type="text"
+                  value={editingText}
+                  onChange={(event) =>
+                    setEditingText(event.target.value)
+                  }
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      saveEdit(todo.id)
+                    }
 
-            <button
-              className="delete-button"
-              onClick={() => deleteTodo(todo.id)}
-            >
-              Delete
-            </button>
+                    if (event.key === 'Escape') {
+                      cancelEdit()
+                    }
+                  }}
+                />
+
+                <button
+                  className="save-button"
+                  onClick={() => saveEdit(todo.id)}
+                >
+                  Save
+                </button>
+
+                <button
+                  className="cancel-button"
+                  onClick={cancelEdit}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <span className={todo.completed ? 'completed' : ''}>
+                  {todo.text}
+                </span>
+
+                <button
+                  className="edit-button"
+                  onClick={() => startEditing(todo)}
+                >
+                  Edit
+                </button>
+
+                <button
+                  className="delete-button"
+                  onClick={() => deleteTodo(todo.id)}
+                >
+                  Delete
+                </button>
+              </>
+            )}
           </li>
         ))}
       </ul>
