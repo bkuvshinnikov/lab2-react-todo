@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import TodoForm from './components/TodoForm'
 import TodoItem from './components/TodoItem'
+import TodoControls from './components/TodoControls'
 
 function App() {
   const [task, setTask] = useState('')
@@ -224,106 +225,18 @@ function App() {
         </span>
       </div>
 
-      <div className="controls">
-        <input
-          className="search-input"
-          type="text"
-          placeholder="Search tasks..."
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
-
-        <select
-          className="category-filter"
-          value={categoryFilter}
-          onChange={(event) =>
-            setCategoryFilter(event.target.value)
-          }
-        >
-          <option value="all">All categories</option>
-          <option value="work">Work</option>
-          <option value="study">Study</option>
-          <option value="personal">Personal</option>
-        </select>
-
-        <select
-          className="sort-select"
-          value={sortBy}
-          onChange={(event) =>
-            setSortBy(event.target.value)
-          }
-        >
-          <option value="default">
-            Default order
-          </option>
-
-          <option value="newest">
-            Newest first
-          </option>
-
-          <option value="oldest">
-            Oldest first
-          </option>
-
-          <option value="priority-high">
-            Priority: High to Low
-          </option>
-
-          <option value="priority-low">
-            Priority: Low to High
-          </option>
-
-          <option value="due-date">
-            Due date
-          </option>
-        </select>
-      </div>
-
-      <div className="filter-row">
-        <div className="filters">
-          <button
-            className={
-              filter === 'all'
-                ? 'active-filter'
-                : ''
-            }
-            onClick={() => setFilter('all')}
-          >
-            All
-          </button>
-
-          <button
-            className={
-              filter === 'active'
-                ? 'active-filter'
-                : ''
-            }
-            onClick={() => setFilter('active')}
-          >
-            Active
-          </button>
-
-          <button
-            className={
-              filter === 'completed'
-                ? 'active-filter'
-                : ''
-            }
-            onClick={() => setFilter('completed')}
-          >
-            Completed
-          </button>
-        </div>
-
-        {todos.some(todo => todo.completed) && (
-          <button
-            className="clear-button"
-            onClick={clearCompleted}
-          >
-            Clear completed
-          </button>
-        )}
-      </div>
+      <TodoControls
+        search={search}
+        setSearch={setSearch}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        filter={filter}
+        setFilter={setFilter}
+        hasCompleted={todos.some(todo => todo.completed)}
+        clearCompleted={clearCompleted}
+      />
 
       <ul>
         {visibleTodos.map(todo => (
