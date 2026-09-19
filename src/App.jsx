@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import TodoForm from './components/TodoForm'
+import TodoItem from './components/TodoItem'
 
 function App() {
   const [task, setTask] = useState('')
@@ -42,6 +43,7 @@ function App() {
     }
 
     setTodos([...todos, newTodo])
+
     setTask('')
     setPriority('medium')
     setCategory('work')
@@ -100,6 +102,10 @@ function App() {
     setEditingDueDate('')
   }
 
+  const clearCompleted = () => {
+    setTodos(todos.filter(todo => !todo.completed))
+  }
+
   const isOverdue = (todo) => {
     if (!todo.dueDate || todo.completed) {
       return false
@@ -114,8 +120,14 @@ function App() {
   }
 
   const getPriorityValue = (priorityValue) => {
-    if (priorityValue === 'high') return 3
-    if (priorityValue === 'medium') return 2
+    if (priorityValue === 'high') {
+      return 3
+    }
+
+    if (priorityValue === 'medium') {
+      return 2
+    }
+
     return 1
   }
 
@@ -156,9 +168,17 @@ function App() {
     }
 
     if (sortBy === 'due-date') {
-      if (!a.dueDate && !b.dueDate) return 0
-      if (!a.dueDate) return 1
-      if (!b.dueDate) return -1
+      if (!a.dueDate && !b.dueDate) {
+        return 0
+      }
+
+      if (!a.dueDate) {
+        return 1
+      }
+
+      if (!b.dueDate) {
+        return -1
+      }
 
       return new Date(a.dueDate) - new Date(b.dueDate)
     }
@@ -173,10 +193,6 @@ function App() {
 
     return 0
   })
-
-  const clearCompleted = () => {
-    setTodos(todos.filter(todo => !todo.completed))
-  }
 
   return (
     <div className="todo-app">
@@ -195,7 +211,9 @@ function App() {
       />
 
       <div className="stats">
-        <span>Total: {todos.length}</span>
+        <span>
+          Total: {todos.length}
+        </span>
 
         <span>
           Active: {todos.filter(todo => !todo.completed).length}
@@ -231,17 +249,30 @@ function App() {
         <select
           className="sort-select"
           value={sortBy}
-          onChange={(event) => setSortBy(event.target.value)}
+          onChange={(event) =>
+            setSortBy(event.target.value)
+          }
         >
-          <option value="default">Default order</option>
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
+          <option value="default">
+            Default order
+          </option>
+
+          <option value="newest">
+            Newest first
+          </option>
+
+          <option value="oldest">
+            Oldest first
+          </option>
+
           <option value="priority-high">
             Priority: High to Low
           </option>
+
           <option value="priority-low">
             Priority: Low to High
           </option>
+
           <option value="due-date">
             Due date
           </option>
@@ -251,21 +282,33 @@ function App() {
       <div className="filter-row">
         <div className="filters">
           <button
-            className={filter === 'all' ? 'active-filter' : ''}
+            className={
+              filter === 'all'
+                ? 'active-filter'
+                : ''
+            }
             onClick={() => setFilter('all')}
           >
             All
           </button>
 
           <button
-            className={filter === 'active' ? 'active-filter' : ''}
+            className={
+              filter === 'active'
+                ? 'active-filter'
+                : ''
+            }
             onClick={() => setFilter('active')}
           >
             Active
           </button>
 
           <button
-            className={filter === 'completed' ? 'active-filter' : ''}
+            className={
+              filter === 'completed'
+                ? 'active-filter'
+                : ''
+            }
             onClick={() => setFilter('completed')}
           >
             Completed
@@ -284,130 +327,25 @@ function App() {
 
       <ul>
         {visibleTodos.map(todo => (
-          <li
+          <TodoItem
             key={todo.id}
-            className={isOverdue(todo) ? 'overdue-task' : ''}
-          >
-            <input
-              type="checkbox"
-              checked={todo.completed}
-              onChange={() => toggleTodo(todo.id)}
-            />
-
-            {editingId === todo.id ? (
-              <>
-                <input
-                  className="edit-input"
-                  type="text"
-                  value={editingText}
-                  onChange={(event) =>
-                    setEditingText(event.target.value)
-                  }
-                />
-
-                <select
-                  className="edit-priority"
-                  value={editingPriority}
-                  onChange={(event) =>
-                    setEditingPriority(event.target.value)
-                  }
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-
-                <select
-                  className="edit-category"
-                  value={editingCategory}
-                  onChange={(event) =>
-                    setEditingCategory(event.target.value)
-                  }
-                >
-                  <option value="work">Work</option>
-                  <option value="study">Study</option>
-                  <option value="personal">Personal</option>
-                </select>
-
-                <input
-                  className="edit-date"
-                  type="date"
-                  value={editingDueDate}
-                  onChange={(event) =>
-                    setEditingDueDate(event.target.value)
-                  }
-                />
-
-                <button
-                  className="save-button"
-                  onClick={() => saveEdit(todo.id)}
-                >
-                  Save
-                </button>
-
-                <button
-                  className="cancel-button"
-                  onClick={cancelEdit}
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <>
-                <div className="task-content">
-                  <span
-                    className={todo.completed ? 'completed' : ''}
-                  >
-                    {todo.text}
-                  </span>
-
-                  <div className="task-meta">
-                    <span
-                      className={`category ${
-                        todo.category || 'work'
-                      }`}
-                    >
-                      {todo.category || 'work'}
-                    </span>
-
-                    {todo.dueDate && (
-                      <span className="due-date">
-                        Due: {todo.dueDate}
-                      </span>
-                    )}
-
-                    {isOverdue(todo) && (
-                      <span className="overdue-label">
-                        Overdue
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <span
-                  className={`priority ${
-                    todo.priority || 'medium'
-                  }`}
-                >
-                  {todo.priority || 'medium'}
-                </span>
-
-                <button
-                  className="edit-button"
-                  onClick={() => startEditing(todo)}
-                >
-                  Edit
-                </button>
-
-                <button
-                  className="delete-button"
-                  onClick={() => deleteTodo(todo.id)}
-                >
-                  Delete
-                </button>
-              </>
-            )}
-          </li>
+            todo={todo}
+            editingId={editingId}
+            editingText={editingText}
+            setEditingText={setEditingText}
+            editingPriority={editingPriority}
+            setEditingPriority={setEditingPriority}
+            editingCategory={editingCategory}
+            setEditingCategory={setEditingCategory}
+            editingDueDate={editingDueDate}
+            setEditingDueDate={setEditingDueDate}
+            toggleTodo={toggleTodo}
+            startEditing={startEditing}
+            saveEdit={saveEdit}
+            cancelEdit={cancelEdit}
+            deleteTodo={deleteTodo}
+            isOverdue={isOverdue}
+          />
         ))}
       </ul>
 
