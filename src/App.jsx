@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import TodoForm from './components/TodoForm'
 import TodoItem from './components/TodoItem'
 import TodoControls from './components/TodoControls'
+import TodoStats from './components/TodoStats'
 
 function App() {
   const [task, setTask] = useState('')
@@ -211,19 +212,7 @@ function App() {
         addTodo={addTodo}
       />
 
-      <div className="stats">
-        <span>
-          Total: {todos.length}
-        </span>
-
-        <span>
-          Active: {todos.filter(todo => !todo.completed).length}
-        </span>
-
-        <span>
-          Completed: {todos.filter(todo => todo.completed).length}
-        </span>
-      </div>
+      <TodoStats todos={todos} />
 
       <TodoControls
         search={search}
