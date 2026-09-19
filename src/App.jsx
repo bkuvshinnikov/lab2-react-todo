@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import TodoForm from './components/TodoForm'
 
 function App() {
   const [task, setTask] = useState('')
@@ -181,47 +182,17 @@ function App() {
     <div className="todo-app">
       <h1>Task Manager</h1>
 
-      <div className="todo-form">
-        <input
-          type="text"
-          placeholder="Enter a task"
-          value={task}
-          onChange={(event) => setTask(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              addTodo()
-            }
-          }}
-        />
-
-        <select
-          value={priority}
-          onChange={(event) => setPriority(event.target.value)}
-        >
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-
-        <select
-          value={category}
-          onChange={(event) => setCategory(event.target.value)}
-        >
-          <option value="work">Work</option>
-          <option value="study">Study</option>
-          <option value="personal">Personal</option>
-        </select>
-
-        <input
-          type="date"
-          value={dueDate}
-          onChange={(event) => setDueDate(event.target.value)}
-        />
-
-        <button onClick={addTodo}>
-          Add
-        </button>
-      </div>
+      <TodoForm
+        task={task}
+        setTask={setTask}
+        priority={priority}
+        setPriority={setPriority}
+        category={category}
+        setCategory={setCategory}
+        dueDate={dueDate}
+        setDueDate={setDueDate}
+        addTodo={addTodo}
+      />
 
       <div className="stats">
         <span>Total: {todos.length}</span>
@@ -332,15 +303,6 @@ function App() {
                   onChange={(event) =>
                     setEditingText(event.target.value)
                   }
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      saveEdit(todo.id)
-                    }
-
-                    if (event.key === 'Escape') {
-                      cancelEdit()
-                    }
-                  }}
                 />
 
                 <select
