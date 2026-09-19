@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react'
 
 function App() {
   const [task, setTask] = useState('')
+  const [priority, setPriority] = useState('medium')
   const [filter, setFilter] = useState('all')
+
   const [editingId, setEditingId] = useState(null)
   const [editingText, setEditingText] = useState('')
+  const [editingPriority, setEditingPriority] = useState('medium')
 
   const [todos, setTodos] = useState(() => {
     const savedTodos = localStorage.getItem('todos')
@@ -24,10 +27,12 @@ function App() {
       id: Date.now(),
       text: task.trim(),
       completed: false,
+      priority: priority,
     }
 
     setTodos([...todos, newTodo])
     setTask('')
+    setPriority('medium')
   }
 
   const deleteTodo = (id) => {
@@ -47,6 +52,7 @@ function App() {
   const startEditing = (todo) => {
     setEditingId(todo.id)
     setEditingText(todo.text)
+    setEditingPriority(todo.priority || 'medium')
   }
 
   const saveEdit = (id) => {
@@ -57,18 +63,24 @@ function App() {
     setTodos(
       todos.map(todo =>
         todo.id === id
-          ? { ...todo, text: editingText.trim() }
+          ? {
+              ...todo,
+              text: editingText.trim(),
+              priority: editingPriority,
+            }
           : todo
       )
     )
 
     setEditingId(null)
     setEditingText('')
+    setEditingPriority('medium')
   }
 
   const cancelEdit = () => {
     setEditingId(null)
     setEditingText('')
+    setEditingPriority('medium')
   }
 
   const filteredTodos = todos.filter(todo => {
@@ -99,6 +111,15 @@ function App() {
             }
           }}
         />
+
+        <select
+          value={priority}
+          onChange={(event) => setPriority(event.target.value)}
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
 
         <button onClick={addTodo}>
           Add
@@ -162,6 +183,18 @@ function App() {
                   }}
                 />
 
+                <select
+                  className="edit-priority"
+                  value={editingPriority}
+                  onChange={(event) =>
+                    setEditingPriority(event.target.value)
+                  }
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+
                 <button
                   className="save-button"
                   onClick={() => saveEdit(todo.id)}
@@ -180,6 +213,14 @@ function App() {
               <>
                 <span className={todo.completed ? 'completed' : ''}>
                   {todo.text}
+                </span>
+
+                <span
+                  className={`priority ${
+                    todo.priority || 'medium'
+                  }`}
+                >
+                  {todo.priority || 'medium'}
                 </span>
 
                 <button

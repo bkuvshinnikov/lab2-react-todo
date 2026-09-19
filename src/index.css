@@ -15,7 +15,7 @@ body {
 
 #root {
   width: 100%;
-  max-width: 750px;
+  max-width: 850px;
   padding: 20px;
 }
 
@@ -27,9 +27,9 @@ body {
 }
 
 h1 {
-  text-align: center;
   margin-top: 0;
   margin-bottom: 30px;
+  text-align: center;
 }
 
 .todo-form {
@@ -43,6 +43,14 @@ h1 {
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 6px;
+}
+
+.todo-form select {
+  padding: 12px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
 }
 
 button {
@@ -61,6 +69,8 @@ button:hover {
 
 .stats {
   margin-top: 20px;
+  font-size: 14px;
+  color: #555;
 }
 
 .filters {
@@ -98,7 +108,11 @@ li:hover {
   transform: scale(1.01);
 }
 
-li span {
+li input[type='checkbox'] {
+  cursor: pointer;
+}
+
+li span:first-of-type {
   flex: 1;
 }
 
@@ -107,12 +121,44 @@ li span {
   opacity: 0.5;
 }
 
+.priority {
+  padding: 5px 9px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.priority.low {
+  background: #d5f5e3;
+  color: #1e8449;
+}
+
+.priority.medium {
+  background: #fcf3cf;
+  color: #b7950b;
+}
+
+.priority.high {
+  background: #fadbd8;
+  color: #c0392b;
+}
+
 .edit-input {
   flex: 1;
+  min-width: 0;
   padding: 8px;
   font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
+}
+
+.edit-priority {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
 }
 
 .edit-button {
@@ -132,7 +178,39 @@ li span {
 }
 
 .empty-message {
-  text-align: center;
   margin-top: 30px;
+  text-align: center;
   color: #777;
+}
+
+@media (max-width: 650px) {
+  body {
+    padding-top: 20px;
+  }
+
+  .todo-app {
+    padding: 20px;
+  }
+
+  .todo-form {
+    flex-direction: column;
+  }
+
+  .todo-form input,
+  .todo-form select,
+  .todo-form button {
+    width: 100%;
+  }
+
+  .filters {
+    flex-wrap: wrap;
+  }
+
+  li {
+    flex-wrap: wrap;
+  }
+
+  .edit-input {
+    width: 100%;
+  }
 }
