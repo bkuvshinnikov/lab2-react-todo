@@ -3,15 +3,18 @@ import { useEffect, useState } from 'react'
 function App() {
   const [task, setTask] = useState('')
   const [priority, setPriority] = useState('medium')
+  const [category, setCategory] = useState('work')
   const [dueDate, setDueDate] = useState('')
 
   const [filter, setFilter] = useState('all')
+  const [categoryFilter, setCategoryFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('default')
 
   const [editingId, setEditingId] = useState(null)
   const [editingText, setEditingText] = useState('')
   const [editingPriority, setEditingPriority] = useState('medium')
+  const [editingCategory, setEditingCategory] = useState('work')
   const [editingDueDate, setEditingDueDate] = useState('')
 
   const [todos, setTodos] = useState(() => {
@@ -33,12 +36,14 @@ function App() {
       text: task.trim(),
       completed: false,
       priority,
+      category,
       dueDate,
     }
 
     setTodos([...todos, newTodo])
     setTask('')
     setPriority('medium')
+    setCategory('work')
     setDueDate('')
   }
 
@@ -60,6 +65,7 @@ function App() {
     setEditingId(todo.id)
     setEditingText(todo.text)
     setEditingPriority(todo.priority || 'medium')
+    setEditingCategory(todo.category || 'work')
     setEditingDueDate(todo.dueDate || '')
   }
 
@@ -75,6 +81,7 @@ function App() {
               ...todo,
               text: editingText.trim(),
               priority: editingPriority,
+              category: editingCategory,
               dueDate: editingDueDate,
             }
           : todo
@@ -88,6 +95,7 @@ function App() {
     setEditingId(null)
     setEditingText('')
     setEditingPriority('medium')
+    setEditingCategory('work')
     setEditingDueDate('')
   }
 
@@ -116,6 +124,13 @@ function App() {
     }
 
     if (filter === 'completed' && !todo.completed) {
+      return false
+    }
+
+    if (
+      categoryFilter !== 'all' &&
+      (todo.category || 'work') !== categoryFilter
+    ) {
       return false
     }
 
@@ -188,6 +203,15 @@ function App() {
           <option value="high">High</option>
         </select>
 
+        <select
+          value={category}
+          onChange={(event) => setCategory(event.target.value)}
+        >
+          <option value="work">Work</option>
+          <option value="study">Study</option>
+          <option value="personal">Personal</option>
+        </select>
+
         <input
           type="date"
           value={dueDate}
@@ -219,6 +243,19 @@ function App() {
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
+
+        <select
+          className="category-filter"
+          value={categoryFilter}
+          onChange={(event) =>
+            setCategoryFilter(event.target.value)
+          }
+        >
+          <option value="all">All categories</option>
+          <option value="work">Work</option>
+          <option value="study">Study</option>
+          <option value="personal">Personal</option>
+        </select>
 
         <select
           className="sort-select"
@@ -318,6 +355,18 @@ function App() {
                   <option value="high">High</option>
                 </select>
 
+                <select
+                  className="edit-category"
+                  value={editingCategory}
+                  onChange={(event) =>
+                    setEditingCategory(event.target.value)
+                  }
+                >
+                  <option value="work">Work</option>
+                  <option value="study">Study</option>
+                  <option value="personal">Personal</option>
+                </select>
+
                 <input
                   className="edit-date"
                   type="date"
@@ -351,6 +400,14 @@ function App() {
                   </span>
 
                   <div className="task-meta">
+                    <span
+                      className={`category ${
+                        todo.category || 'work'
+                      }`}
+                    >
+                      {todo.category || 'work'}
+                    </span>
+
                     {todo.dueDate && (
                       <span className="due-date">
                         Due: {todo.dueDate}
