@@ -4,7 +4,10 @@ function App() {
   const [task, setTask] = useState('')
   const [priority, setPriority] = useState('medium')
   const [dueDate, setDueDate] = useState('')
+
   const [filter, setFilter] = useState('all')
+  const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState('default')
 
   const [editingId, setEditingId] = useState(null)
   const [editingText, setEditingText] = useState('')
@@ -78,10 +81,7 @@ function App() {
       )
     )
 
-    setEditingId(null)
-    setEditingText('')
-    setEditingPriority('medium')
-    setEditingDueDate('')
+    cancelEdit()
   }
 
   const cancelEdit = () => {
@@ -104,21 +104,67 @@ function App() {
     return deadline < today
   }
 
-  const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') {
-      return !todo.completed
+  const getPriorityValue = (priorityValue) => {
+    if (priorityValue === 'high') return 3
+    if (priorityValue === 'medium') return 2
+    return 1
+  }
+
+  let visibleTodos = todos.filter(todo => {
+    if (filter === 'active' && todo.completed) {
+      return false
     }
 
-    if (filter === 'completed') {
-      return todo.completed
+    if (filter === 'completed' && !todo.completed) {
+      return false
     }
 
-    return true
+    return todo.text
+      .toLowerCase()
+      .includes(search.toLowerCase())
   })
+
+  visibleTodos = [...visibleTodos].sort((a, b) => {
+    if (sortBy === 'priority-high') {
+      return (
+        getPriorityValue(b.priority || 'medium') -
+        getPriorityValue(a.priority || 'medium')
+      )
+    }
+
+    if (sortBy === 'priority-low') {
+      return (
+        getPriorityValue(a.priority || 'medium') -
+        getPriorityValue(b.priority || 'medium')
+      )
+    }
+
+    if (sortBy === 'due-date') {
+      if (!a.dueDate && !b.dueDate) return 0
+      if (!a.dueDate) return 1
+      if (!b.dueDate) return -1
+
+      return new Date(a.dueDate) - new Date(b.dueDate)
+    }
+
+    if (sortBy === 'newest') {
+      return b.id - a.id
+    }
+
+    if (sortBy === 'oldest') {
+      return a.id - b.id
+    }
+
+    return 0
+  })
+
+  const clearCompleted = () => {
+    setTodos(todos.filter(todo => !todo.completed))
+  }
 
   return (
     <div className="todo-app">
-      <h1>React Todo App</h1>
+      <h1>Task Manager</h1>
 
       <div className="todo-form">
         <input
@@ -143,7 +189,6 @@ function App() {
         </select>
 
         <input
-          className="date-input"
           type="date"
           value={dueDate}
           onChange={(event) => setDueDate(event.target.value)}
@@ -155,35 +200,82 @@ function App() {
       </div>
 
       <div className="stats">
-        Total: {todos.length} | Completed:{' '}
-        {todos.filter(todo => todo.completed).length}
+        <span>Total: {todos.length}</span>
+
+        <span>
+          Active: {todos.filter(todo => !todo.completed).length}
+        </span>
+
+        <span>
+          Completed: {todos.filter(todo => todo.completed).length}
+        </span>
       </div>
 
-      <div className="filters">
-        <button
-          className={filter === 'all' ? 'active-filter' : ''}
-          onClick={() => setFilter('all')}
-        >
-          All
-        </button>
+      <div className="controls">
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Search tasks..."
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+        />
 
-        <button
-          className={filter === 'active' ? 'active-filter' : ''}
-          onClick={() => setFilter('active')}
+        <select
+          className="sort-select"
+          value={sortBy}
+          onChange={(event) => setSortBy(event.target.value)}
         >
-          Active
-        </button>
+          <option value="default">Default order</option>
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="priority-high">
+            Priority: High to Low
+          </option>
+          <option value="priority-low">
+            Priority: Low to High
+          </option>
+          <option value="due-date">
+            Due date
+          </option>
+        </select>
+      </div>
 
-        <button
-          className={filter === 'completed' ? 'active-filter' : ''}
-          onClick={() => setFilter('completed')}
-        >
-          Completed
-        </button>
+      <div className="filter-row">
+        <div className="filters">
+          <button
+            className={filter === 'all' ? 'active-filter' : ''}
+            onClick={() => setFilter('all')}
+          >
+            All
+          </button>
+
+          <button
+            className={filter === 'active' ? 'active-filter' : ''}
+            onClick={() => setFilter('active')}
+          >
+            Active
+          </button>
+
+          <button
+            className={filter === 'completed' ? 'active-filter' : ''}
+            onClick={() => setFilter('completed')}
+          >
+            Completed
+          </button>
+        </div>
+
+        {todos.some(todo => todo.completed) && (
+          <button
+            className="clear-button"
+            onClick={clearCompleted}
+          >
+            Clear completed
+          </button>
+        )}
       </div>
 
       <ul>
-        {filteredTodos.map(todo => (
+        {visibleTodos.map(todo => (
           <li
             key={todo.id}
             className={isOverdue(todo) ? 'overdue-task' : ''}
@@ -300,7 +392,7 @@ function App() {
         ))}
       </ul>
 
-      {filteredTodos.length === 0 && (
+      {visibleTodos.length === 0 && (
         <p className="empty-message">
           No tasks found.
         </p>

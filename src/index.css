@@ -5,30 +5,28 @@
 body {
   margin: 0;
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 60px;
+  padding-top: 50px;
   font-family: Arial, sans-serif;
-  background: #f4f4f4;
+  background: #f3f4f6;
+  color: #222;
 }
 
 #root {
   width: 100%;
-  max-width: 1000px;
+  max-width: 1050px;
+  margin: 0 auto;
   padding: 20px;
 }
 
 .todo-app {
+  padding: 32px;
   background: white;
-  padding: 30px;
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 h1 {
-  margin-top: 0;
-  margin-bottom: 30px;
+  margin: 0 0 30px;
   text-align: center;
 }
 
@@ -37,21 +35,19 @@ h1 {
   gap: 10px;
 }
 
-.todo-form input[type='text'] {
-  flex: 1;
-}
-
 .todo-form input,
-.todo-form select {
-  padding: 12px;
-  font-size: 15px;
+.todo-form select,
+.search-input,
+.sort-select {
+  padding: 11px;
+  font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background: white;
 }
 
-.date-input {
-  min-width: 150px;
+.todo-form input[type='text'] {
+  flex: 1;
 }
 
 button {
@@ -61,23 +57,53 @@ button {
   cursor: pointer;
   background: #222;
   color: white;
-  transition: 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 
 button:hover {
-  opacity: 0.8;
+  opacity: 0.85;
+}
+
+button:active {
+  transform: scale(0.97);
 }
 
 .stats {
-  margin-top: 20px;
+  display: flex;
+  gap: 25px;
+  margin-top: 22px;
+  padding: 12px 0;
   font-size: 14px;
   color: #555;
+  border-bottom: 1px solid #eee;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.search-input {
+  flex: 1;
+}
+
+.sort-select {
+  min-width: 200px;
+}
+
+.filter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18px;
 }
 
 .filters {
   display: flex;
   gap: 8px;
-  margin-top: 20px;
 }
 
 .filters button {
@@ -88,28 +114,38 @@ button:hover {
   background: #222;
 }
 
+.clear-button {
+  background: #8e44ad;
+}
+
 ul {
-  list-style: none;
+  margin: 20px 0 0;
   padding: 0;
-  margin-top: 20px;
+  list-style: none;
 }
 
 li {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px;
   margin-bottom: 10px;
+  padding: 14px;
   background: #f8f8f8;
-  border-radius: 6px;
-  transition: transform 0.2s;
+  border-radius: 8px;
+  border-left: 4px solid transparent;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 li:hover {
-  transform: scale(1.01);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
 }
 
 li input[type='checkbox'] {
+  width: 17px;
+  height: 17px;
   cursor: pointer;
 }
 
@@ -120,13 +156,14 @@ li input[type='checkbox'] {
 
 .task-content > span {
   display: block;
+  word-break: break-word;
 }
 
 .task-meta {
   display: flex;
-  gap: 8px;
   align-items: center;
-  margin-top: 5px;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 .due-date {
@@ -134,29 +171,31 @@ li input[type='checkbox'] {
   color: #777;
 }
 
+.overdue-task {
+  border-left-color: #c0392b;
+}
+
 .overdue-label {
   padding: 3px 7px;
   border-radius: 10px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: bold;
   text-transform: uppercase;
-  background: #f8d7da;
-  color: #a71d2a;
-}
-
-.overdue-task {
-  border-left: 4px solid #c0392b;
+  background: #fadbd8;
+  color: #c0392b;
 }
 
 .completed {
   text-decoration: line-through;
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
 .priority {
+  min-width: 72px;
   padding: 5px 9px;
   border-radius: 12px;
-  font-size: 12px;
+  text-align: center;
+  font-size: 11px;
   font-weight: bold;
   text-transform: uppercase;
 }
@@ -168,7 +207,7 @@ li input[type='checkbox'] {
 
 .priority.medium {
   background: #fcf3cf;
-  color: #b7950b;
+  color: #9a7d0a;
 }
 
 .priority.high {
@@ -180,7 +219,7 @@ li input[type='checkbox'] {
   flex: 1;
   min-width: 0;
   padding: 8px;
-  font-size: 15px;
+  font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 6px;
 }
@@ -188,7 +227,7 @@ li input[type='checkbox'] {
 .edit-priority,
 .edit-date {
   padding: 8px;
-  font-size: 14px;
+  font-size: 13px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background: white;
@@ -211,14 +250,18 @@ li input[type='checkbox'] {
 }
 
 .empty-message {
-  margin-top: 30px;
+  margin-top: 35px;
   text-align: center;
   color: #777;
 }
 
 @media (max-width: 800px) {
   body {
-    padding-top: 20px;
+    padding-top: 15px;
+  }
+
+  #root {
+    padding: 10px;
   }
 
   .todo-app {
@@ -235,6 +278,25 @@ li input[type='checkbox'] {
     width: 100%;
   }
 
+  .stats {
+    flex-wrap: wrap;
+    gap: 10px 20px;
+  }
+
+  .controls {
+    flex-direction: column;
+  }
+
+  .sort-select {
+    width: 100%;
+  }
+
+  .filter-row {
+    align-items: flex-start;
+    gap: 12px;
+    flex-direction: column;
+  }
+
   .filters {
     flex-wrap: wrap;
   }
@@ -249,5 +311,6 @@ li input[type='checkbox'] {
 
   .edit-input {
     width: 100%;
+    flex-basis: 100%;
   }
 }
