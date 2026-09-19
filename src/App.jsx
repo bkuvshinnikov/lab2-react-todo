@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react'
 function App() {
   const [task, setTask] = useState('')
   const [priority, setPriority] = useState('medium')
+  const [dueDate, setDueDate] = useState('')
   const [filter, setFilter] = useState('all')
 
   const [editingId, setEditingId] = useState(null)
   const [editingText, setEditingText] = useState('')
   const [editingPriority, setEditingPriority] = useState('medium')
+  const [editingDueDate, setEditingDueDate] = useState('')
 
   const [todos, setTodos] = useState(() => {
     const savedTodos = localStorage.getItem('todos')
@@ -27,12 +29,14 @@ function App() {
       id: Date.now(),
       text: task.trim(),
       completed: false,
-      priority: priority,
+      priority,
+      dueDate,
     }
 
     setTodos([...todos, newTodo])
     setTask('')
     setPriority('medium')
+    setDueDate('')
   }
 
   const deleteTodo = (id) => {
@@ -53,6 +57,7 @@ function App() {
     setEditingId(todo.id)
     setEditingText(todo.text)
     setEditingPriority(todo.priority || 'medium')
+    setEditingDueDate(todo.dueDate || '')
   }
 
   const saveEdit = (id) => {
@@ -67,6 +72,7 @@ function App() {
               ...todo,
               text: editingText.trim(),
               priority: editingPriority,
+              dueDate: editingDueDate,
             }
           : todo
       )
@@ -75,12 +81,27 @@ function App() {
     setEditingId(null)
     setEditingText('')
     setEditingPriority('medium')
+    setEditingDueDate('')
   }
 
   const cancelEdit = () => {
     setEditingId(null)
     setEditingText('')
     setEditingPriority('medium')
+    setEditingDueDate('')
+  }
+
+  const isOverdue = (todo) => {
+    if (!todo.dueDate || todo.completed) {
+      return false
+    }
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const deadline = new Date(`${todo.dueDate}T00:00:00`)
+
+    return deadline < today
   }
 
   const filteredTodos = todos.filter(todo => {
@@ -121,6 +142,13 @@ function App() {
           <option value="high">High</option>
         </select>
 
+        <input
+          className="date-input"
+          type="date"
+          value={dueDate}
+          onChange={(event) => setDueDate(event.target.value)}
+        />
+
         <button onClick={addTodo}>
           Add
         </button>
@@ -156,7 +184,10 @@ function App() {
 
       <ul>
         {filteredTodos.map(todo => (
-          <li key={todo.id}>
+          <li
+            key={todo.id}
+            className={isOverdue(todo) ? 'overdue-task' : ''}
+          >
             <input
               type="checkbox"
               checked={todo.completed}
@@ -195,6 +226,15 @@ function App() {
                   <option value="high">High</option>
                 </select>
 
+                <input
+                  className="edit-date"
+                  type="date"
+                  value={editingDueDate}
+                  onChange={(event) =>
+                    setEditingDueDate(event.target.value)
+                  }
+                />
+
                 <button
                   className="save-button"
                   onClick={() => saveEdit(todo.id)}
@@ -211,9 +251,27 @@ function App() {
               </>
             ) : (
               <>
-                <span className={todo.completed ? 'completed' : ''}>
-                  {todo.text}
-                </span>
+                <div className="task-content">
+                  <span
+                    className={todo.completed ? 'completed' : ''}
+                  >
+                    {todo.text}
+                  </span>
+
+                  <div className="task-meta">
+                    {todo.dueDate && (
+                      <span className="due-date">
+                        Due: {todo.dueDate}
+                      </span>
+                    )}
+
+                    {isOverdue(todo) && (
+                      <span className="overdue-label">
+                        Overdue
+                      </span>
+                    )}
+                  </div>
+                </div>
 
                 <span
                   className={`priority ${
