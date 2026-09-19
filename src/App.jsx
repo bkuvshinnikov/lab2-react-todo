@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 function App() {
   const [task, setTask] = useState('')
+  const [filter, setFilter] = useState('all')
 
   const [todos, setTodos] = useState(() => {
     const savedTodos = localStorage.getItem('todos')
@@ -20,7 +21,7 @@ function App() {
 
     const newTodo = {
       id: Date.now(),
-      text: task,
+      text: task.trim(),
       completed: false,
     }
 
@@ -42,33 +43,70 @@ function App() {
     )
   }
 
+  const filteredTodos = todos.filter(todo => {
+    if (filter === 'active') {
+      return !todo.completed
+    }
+
+    if (filter === 'completed') {
+      return todo.completed
+    }
+
+    return true
+  })
+
   return (
-    <div>
+    <div className="todo-app">
       <h1>React Todo App</h1>
 
-      <input
-        type="text"
-        placeholder="Enter a task"
-        value={task}
-        onChange={(event) => setTask(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            addTodo()
-          }
-        }}
-      />
+      <div className="todo-form">
+        <input
+          type="text"
+          placeholder="Enter a task"
+          value={task}
+          onChange={(event) => setTask(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              addTodo()
+            }
+          }}
+        />
 
-      <button onClick={addTodo}>
-        Add
-      </button>
+        <button onClick={addTodo}>
+          Add
+        </button>
+      </div>
 
-      <p>
+      <div className="stats">
         Total: {todos.length} | Completed:{' '}
         {todos.filter(todo => todo.completed).length}
-      </p>
+      </div>
+
+      <div className="filters">
+        <button
+          className={filter === 'all' ? 'active-filter' : ''}
+          onClick={() => setFilter('all')}
+        >
+          All
+        </button>
+
+        <button
+          className={filter === 'active' ? 'active-filter' : ''}
+          onClick={() => setFilter('active')}
+        >
+          Active
+        </button>
+
+        <button
+          className={filter === 'completed' ? 'active-filter' : ''}
+          onClick={() => setFilter('completed')}
+        >
+          Completed
+        </button>
+      </div>
 
       <ul>
-        {todos.map(todo => (
+        {filteredTodos.map(todo => (
           <li key={todo.id}>
             <input
               type="checkbox"
@@ -76,22 +114,25 @@ function App() {
               onChange={() => toggleTodo(todo.id)}
             />
 
-            <span
-              style={{
-                textDecoration: todo.completed
-                  ? 'line-through'
-                  : 'none',
-              }}
-            >
+            <span className={todo.completed ? 'completed' : ''}>
               {todo.text}
             </span>
 
-            <button onClick={() => deleteTodo(todo.id)}>
+            <button
+              className="delete-button"
+              onClick={() => deleteTodo(todo.id)}
+            >
               Delete
             </button>
           </li>
         ))}
       </ul>
+
+      {filteredTodos.length === 0 && (
+        <p className="empty-message">
+          No tasks found.
+        </p>
+      )}
     </div>
   )
 }

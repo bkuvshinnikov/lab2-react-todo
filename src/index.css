@@ -15,18 +15,31 @@ body {
 
 #root {
   width: 100%;
-  max-width: 600px;
+  max-width: 650px;
   padding: 20px;
+}
+
+.todo-app {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 h1 {
   text-align: center;
+  margin-top: 0;
   margin-bottom: 30px;
 }
 
-input[type='text'] {
-  width: 75%;
-  padding: 10px;
+.todo-form {
+  display: flex;
+  gap: 10px;
+}
+
+.todo-form input {
+  flex: 1;
+  padding: 12px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -34,20 +47,34 @@ input[type='text'] {
 
 button {
   padding: 10px 16px;
-  margin-left: 8px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   background: #222;
   color: white;
+  transition: 0.2s;
 }
 
 button:hover {
   opacity: 0.8;
 }
 
-p {
+.stats {
   margin-top: 20px;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.filters button {
+  background: #777;
+}
+
+.filters .active-filter {
+  background: #222;
 }
 
 ul {
@@ -59,12 +86,12 @@ ul {
 li {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px;
+  gap: 12px;
+  padding: 14px;
   margin-bottom: 10px;
-  background: white;
+  background: #f8f8f8;
   border-radius: 6px;
-  transition: 0.2s;
+  transition: transform 0.2s;
 }
 
 li:hover {
@@ -75,6 +102,17 @@ li span {
   flex: 1;
 }
 
-li button {
+.completed {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.delete-button {
   background: #c0392b;
+}
+
+.empty-message {
+  text-align: center;
+  margin-top: 30px;
+  color: #777;
 }
