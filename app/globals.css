@@ -284,6 +284,9 @@ body {
 .logout-button { padding: 9px 12px; color: #b86666; background: rgba(184,102,102,.12); font-size: 11px; }
 
 .auth-link { color: var(--accent); font-size: 13px; font-weight: 700; text-decoration: none; }
+.category-manager { display: flex; gap: 10px; margin-top: 12px; }
+.category-manager input { flex: 1; }
+.category-manager button { padding: 9px 12px; font-size: 11px; color: var(--text-secondary); background: var(--border); }
 
 /* =========================================
    PANELS

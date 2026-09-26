@@ -30,6 +30,7 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
   const [theme, setTheme] = useState<Theme>('dark')
   const [todos, setTodos] = useState<Task[]>([])
   const [categories, setCategories] = useState<Category[]>(['work', 'study', 'personal'])
+  const [newCategory, setNewCategory] = useState('')
 
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
@@ -66,6 +67,17 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
     setPriority('medium')
     setCategory('work')
     setDueDate('')
+  }
+
+  const addCategory = async () => {
+    const name = newCategory.trim().toLowerCase()
+    if (!name) return
+    const response = await fetch('/api/categories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) })
+    if (!response.ok) return
+    const data = await response.json()
+    setCategories(current => current.includes(data.category) ? current : [...current, data.category])
+    setCategory(data.category)
+    setNewCategory('')
   }
 
   const deleteTodo = async (id: string) => {
@@ -245,6 +257,10 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
             addTodo={addTodo}
             categories={categories}
           />
+          <div className="category-manager">
+            <input type="text" placeholder="New category" value={newCategory} maxLength={40} onChange={event => setNewCategory(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') addCategory() }} />
+            <button type="button" onClick={addCategory}>Add category</button>
+          </div>
         </section>
 
         <section className="glass-panel controls-panel">
