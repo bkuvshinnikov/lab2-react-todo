@@ -24,6 +24,7 @@ npm run dev
 
 Fill `MONGODB_URI` and `MONGODB_DB` in `.env.local`. Keep `.env.local` out of Git.
 Atlas setup is documented in [docs/mongodb-setup.md](docs/mongodb-setup.md).
+Vercel deployment is documented in [docs/vercel-deployment.md](docs/vercel-deployment.md).
 
 Open `http://localhost:3000`. Unauthenticated visitors are sent to `/login`.
 Registration is available at `/register`.
@@ -45,4 +46,5 @@ npm run build -- --webpack
 - `docs/` — setup and API notes
 
 Task persistence is still local-first. Moving tasks and categories to MongoDB is
-the next backend phase.
+implemented through protected API routes. The remaining deployment configuration
+is kept in the Vercel guide.
