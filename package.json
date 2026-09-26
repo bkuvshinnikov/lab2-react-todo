@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint --config eslint.config.mjs app components types lib"
+    "lint": "eslint --config eslint.config.mjs app components types lib",
+    "test:registration": "node --test tests/registration.test.cjs"
   },
   "dependencies": {
     "mongodb": "^7.6.0",
