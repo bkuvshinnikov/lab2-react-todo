@@ -31,6 +31,9 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
   const [todos, setTodos] = useState<Task[]>([])
   const [categories, setCategories] = useState<Category[]>(['work', 'study', 'personal'])
   const [newCategory, setNewCategory] = useState('')
+  const [activeTab, setActiveTab] = useState<'tasks' | 'categories'>('tasks')
+  const [editingCategoryName, setEditingCategoryName] = useState<string | null>(null)
+  const [editingCategoryValue, setEditingCategoryValue] = useState('')
 
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
@@ -70,15 +73,24 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
   }
 
   const addCategory = async () => {
-    const name = newCategory.trim().toLowerCase()
-    if (!name) return
+    const name = newCategory.trim().toLowerCase(); if (!name) return
     const response = await fetch('/api/categories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) })
     if (!response.ok) return
-    const data = await response.json()
-    setCategories(current => current.includes(data.category) ? current : [...current, data.category])
-    setCategory(data.category)
-    setNewCategory('')
+    const data = await response.json(); setCategories(current => [...current, data.category]); setCategory(data.category); setNewCategory('')
   }
+
+  const deleteCategory = async (name: string) => {
+    if ((await fetch(`/api/categories/${encodeURIComponent(name)}`, { method: 'DELETE' })).ok) {
+      setCategories(current => current.filter(item => item !== name)); if (category === name) setCategory('work')
+    }
+  }
+
+  const renameCategory = async (oldName: string) => {
+    const newName = editingCategoryValue.trim().toLowerCase(); if (!newName) return
+    const response = await fetch(`/api/categories/${encodeURIComponent(oldName)}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: newName }) })
+    if (response.ok) { setCategories(current => current.map(item => item === oldName ? newName : item)); setTodos(current => current.map(todo => todo.category === oldName ? { ...todo, category: newName } : todo)); if (category === oldName) setCategory(newName); setEditingCategoryName(null) }
+  }
+
 
   const deleteTodo = async (id: string) => {
     if ((await fetch(`/api/tasks/${id}`, { method: 'DELETE' })).ok) setTodos(current => current.filter(todo => todo.id !== id))
@@ -229,11 +241,9 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
           </div>
         </header>
 
-        <section className="dashboard-section">
-          <TodoStats todos={todos} />
-        </section>
+        <section className="dashboard-section"><TodoStats todos={todos} /></section>
 
-        <section className="glass-panel create-section">
+        {activeTab === 'tasks' && <section className="glass-panel create-section">
           <div className="section-heading">
             <div>
               <span className="section-kicker">NEW TASK</span>
@@ -257,25 +267,19 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
             addTodo={addTodo}
             categories={categories}
           />
-          <div className="category-manager">
-            <input type="text" placeholder="New category" value={newCategory} maxLength={40} onChange={event => setNewCategory(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') addCategory() }} />
-            <button type="button" onClick={addCategory}>Add category</button>
-          </div>
-        </section>
+        </section>}
 
         <section className="glass-panel controls-panel">
           <div className="section-heading">
             <div>
               <span className="section-kicker">WORKSPACE</span>
-              <h2>Your tasks</h2>
+              <div className="workspace-tabs"><button className={activeTab === 'tasks' ? 'active-tab' : ''} onClick={() => setActiveTab('tasks')}>Your tasks</button><button className={activeTab === 'categories' ? 'active-tab' : ''} onClick={() => setActiveTab('categories')}>Your categories</button></div>
             </div>
 
-            <span className="task-count">
-              {visibleTodos.length} visible
-            </span>
+            {activeTab === 'tasks' && <span className="task-count">{visibleTodos.length} visible</span>}
           </div>
 
-          <TodoControls
+          {activeTab === 'tasks' && <TodoControls
             search={search}
             setSearch={setSearch}
             categoryFilter={categoryFilter}
@@ -287,10 +291,11 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
             hasCompleted={todos.some(todo => todo.completed)}
             clearCompleted={clearCompleted}
             categories={categories}
-          />
+          />}
+          {activeTab === 'categories' && <div className="inline-category-manager"><div className="category-create"><input value={newCategory} maxLength={40} placeholder="Category name" onChange={event => setNewCategory(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') addCategory() }} /><button onClick={addCategory}>Add category</button></div><div className="category-list">{categories.map(item => <span className="category-manager-item" key={item}>{editingCategoryName === item ? <input className="category-edit-input" value={editingCategoryValue} maxLength={40} onChange={event => setEditingCategoryValue(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') renameCategory(item); if (event.key === 'Escape') setEditingCategoryName(null) }} autoFocus /> : <span>{item}</span>}<span className="category-actions"><button className="edit-button" type="button" onClick={() => { setEditingCategoryName(item); setEditingCategoryValue(item) }}>Edit</button><button className="delete-button" type="button" onClick={() => deleteCategory(item)} aria-label={`Delete ${item} category`}>Delete</button></span></span>)}</div></div>}
         </section>
 
-        <section className="tasks-section">
+        {activeTab === 'tasks' && <section className="tasks-section">
           <ul>
             {visibleTodos.map(todo => (
               <TodoItem
@@ -327,7 +332,7 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
               </p>
             </div>
           )}
-        </section>
+        </section>}
 
         <footer className="footer">
           <span>React Task Manager</span>

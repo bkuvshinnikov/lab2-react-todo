@@ -287,6 +287,31 @@ body {
 .category-manager { display: flex; gap: 10px; margin-top: 12px; }
 .category-manager input { flex: 1; }
 .category-manager button { padding: 9px 12px; font-size: 11px; color: var(--text-secondary); background: var(--border); }
+.category-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.category-manager-item { display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px 4px 10px; border-radius: 999px; color: var(--text-secondary); background: var(--border); font-size: 11px; }
+.category-manager-item button { padding: 0 3px; color: var(--text-muted); background: transparent; font-size: 16px; line-height: 1; }
+.workspace-tabs { display: inline-flex; gap: 5px; padding: 4px; border: 1px solid var(--border); border-radius: 12px; background: var(--input-bg); }
+.workspace-tabs button { padding: 8px 12px; border-radius: 9px; color: var(--text-secondary); background: transparent; font-size: 12px; }
+.workspace-tabs button.active-tab { color: white; background: linear-gradient(135deg,#3f5366,#5d7286); }
+.inline-category-manager { margin-top: 4px; }
+.app-container .inline-category-manager .category-list { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 14px; }
+.app-container .inline-category-manager .category-manager-item { display: flex; width: 100%; justify-content: space-between; min-height: 42px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 13px; color: var(--text); background: var(--item-bg); font-size: 13px; }
+.category-actions { display: inline-flex; gap: 8px; margin-left: 12px; }
+.category-actions .edit-button, .category-actions .delete-button { padding: 9px 12px; border-radius: 11px; font-size: 11px; }
+.category-actions .edit-button { color: #6d8fab; background: rgba(90, 125, 155, 0.12); }
+.category-actions .delete-button { color: #b86666; background: rgba(184, 102, 102, 0.12); }
+.category-edit-input { min-width: 0; flex: 1; padding: 7px 9px; border: 1px solid var(--border); border-radius: 8px; color: var(--text); background: var(--input-bg); font: inherit; }
+.category-page { min-height: 100vh; display: grid; place-items: center; padding: 24px; color: #f1f3f5; background: linear-gradient(180deg, #0f1217, #171b21); }
+.category-card { width: min(100%, 520px); padding: 36px; border: 1px solid rgba(255,255,255,.09); border-radius: 24px; background: rgba(28,31,38,.92); box-shadow: 0 24px 60px rgba(0,0,0,.28); }
+.category-card h1 { margin: 4px 0 0; font-size: 30px; letter-spacing: -.04em; }
+.category-create { display: flex; gap: 10px; margin-top: 28px; }
+.category-create input { flex: 1; padding: 13px 14px; border: 1px solid var(--border); border-radius: 13px; color: var(--text); background: var(--input-bg); font: inherit; outline: none; }
+.app-container.light .category-create input { color: var(--text); background: var(--input-bg); }
+.category-create button { background: linear-gradient(135deg,#3f5366,#5d7286); }
+.category-message { color: #8ba0b2; font-size: 13px; }
+.category-items { display: grid; gap: 10px; margin: 22px 0 0; padding: 0; list-style: none; }
+.category-items li { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 13px; color: #f1f3f5; background: rgba(255,255,255,.06); }
+.category-items button { padding: 8px 11px; color: #b86666; background: rgba(184,102,102,.12); font-size: 11px; }
 
 /* =========================================
    PANELS
