@@ -4,7 +4,6 @@ import type { Category, Priority } from '@/types/task'
 
 export const runtime = 'nodejs'
 const priorities: Priority[] = ['low', 'medium', 'high']
-const categories: Category[] = ['work', 'study', 'personal']
 
 function responseTask(task: { _id: { toHexString(): string }; text: string; completed: boolean; priority: Priority; category: Category; dueDate: string; createdAt: Date }) { return { id: task._id.toHexString(), text: task.text, completed: task.completed, priority: task.priority, category: task.category, dueDate: task.dueDate, createdAt: task.createdAt.toISOString() } }
 
@@ -21,7 +20,7 @@ export async function POST(request: Request) {
   const input = await body(request)
   if (!input || typeof input.text !== 'string' || !input.text.trim() || input.text.trim().length > 500) return Response.json({ error: 'Task text must contain 1–500 characters.' }, { status: 400 })
   const priority = priorities.includes(input.priority as Priority) ? input.priority as Priority : 'medium'
-  const category = categories.includes(input.category as Category) ? input.category as Category : 'work'
+  const category = typeof input.category === 'string' && input.category.trim().length <= 40 && input.category.trim() ? input.category.trim().toLowerCase() : 'work'
   const dueDate = typeof input.dueDate === 'string' ? input.dueDate : ''
   const now = new Date(); const result = await (await getTasksCollection()).insertOne({ userId: user._id, text: input.text.trim(), completed: false, priority, category, dueDate, createdAt: now, updatedAt: now })
   return Response.json({ task: responseTask({ _id: result.insertedId, text: input.text.trim(), completed: false, priority, category, dueDate, createdAt: now }) }, { status: 201 })

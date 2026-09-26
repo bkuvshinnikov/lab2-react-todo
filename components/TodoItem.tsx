@@ -17,6 +17,7 @@ interface TodoItemProps {
   cancelEdit: () => void
   deleteTodo: (id: string) => void
   isOverdue: (todo: Task) => boolean
+  categories: string[]
 }
 
 function TodoItem({
@@ -36,6 +37,7 @@ function TodoItem({
   cancelEdit,
   deleteTodo,
   isOverdue,
+  categories,
 }: TodoItemProps) {
   return (
     <li className={isOverdue(todo) ? 'overdue-task' : ''}>
@@ -82,9 +84,7 @@ function TodoItem({
               setEditingCategory(event.target.value as Category)
             }
           >
-            <option value="work">Work</option>
-            <option value="study">Study</option>
-            <option value="personal">Personal</option>
+            {categories.map(item => <option key={item} value={item}>{item}</option>)}
           </select>
 
           <input

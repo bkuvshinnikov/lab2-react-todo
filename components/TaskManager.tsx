@@ -29,6 +29,7 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
 
   const [theme, setTheme] = useState<Theme>('dark')
   const [todos, setTodos] = useState<Task[]>([])
+  const [categories, setCategories] = useState<Category[]>(['work', 'study', 'personal'])
 
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
@@ -36,6 +37,7 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
       const savedTheme = localStorage.getItem('theme')
       setTheme(savedTheme === 'light' ? 'light' : 'dark')
       fetch('/api/tasks', { cache: 'no-store' }).then(response => response.ok ? response.json() : Promise.reject(new Error('Could not load tasks.'))).then(data => setTodos(data.tasks)).catch(error => console.warn(error))
+      fetch('/api/categories', { cache: 'no-store' }).then(response => response.ok ? response.json() : Promise.reject(new Error('Could not load categories.'))).then(data => setCategories(data.categories)).catch(error => console.warn(error))
     } catch (error) {
       console.warn('Could not load saved tasks or theme.', error)
     }
@@ -241,6 +243,7 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
             dueDate={dueDate}
             setDueDate={setDueDate}
             addTodo={addTodo}
+            categories={categories}
           />
         </section>
 
@@ -267,6 +270,7 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
             setFilter={setFilter}
             hasCompleted={todos.some(todo => todo.completed)}
             clearCompleted={clearCompleted}
+            categories={categories}
           />
         </section>
 
@@ -291,6 +295,7 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
                 cancelEdit={cancelEdit}
                 deleteTodo={deleteTodo}
                 isOverdue={isOverdue}
+                categories={categories}
               />
             ))}
           </ul>

@@ -10,6 +10,7 @@ interface TodoFormProps {
   dueDate: string
   setDueDate: (value: string) => void
   addTodo: () => void
+  categories: Category[]
 }
 
 function TodoForm({
@@ -22,6 +23,7 @@ function TodoForm({
   dueDate,
   setDueDate,
   addTodo,
+  categories,
 }: TodoFormProps) {
   return (
     <div className="todo-form">
@@ -50,9 +52,7 @@ function TodoForm({
         value={category}
         onChange={(event) => setCategory(event.target.value as Category)}
       >
-        <option value="work">Work</option>
-        <option value="study">Study</option>
-        <option value="personal">Personal</option>
+        {categories.map(item => <option key={item} value={item}>{item}</option>)}
       </select>
 
       <input

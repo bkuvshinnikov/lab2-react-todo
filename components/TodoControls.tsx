@@ -11,6 +11,7 @@ interface TodoControlsProps {
   setFilter: (value: TaskFilter) => void
   hasCompleted: boolean
   clearCompleted: () => void
+  categories: string[]
 }
 
 function TodoControls({
@@ -24,6 +25,7 @@ function TodoControls({
   setFilter,
   hasCompleted,
   clearCompleted,
+  categories,
 }: TodoControlsProps) {
   return (
     <>
@@ -44,9 +46,7 @@ function TodoControls({
           }
         >
           <option value="all">All categories</option>
-          <option value="work">Work</option>
-          <option value="study">Study</option>
-          <option value="personal">Personal</option>
+          {categories.map(item => <option key={item} value={item}>{item}</option>)}
         </select>
 
         <select

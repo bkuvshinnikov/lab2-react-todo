@@ -1,5 +1,5 @@
 export type Priority = 'low' | 'medium' | 'high'
-export type Category = 'work' | 'study' | 'personal'
+export type Category = string
 export type TaskFilter = 'all' | 'active' | 'completed'
 export type CategoryFilter = 'all' | Category
 export type SortBy = 'default' | 'newest' | 'oldest' | 'priority-high' | 'priority-low' | 'due-date'
