@@ -13,7 +13,7 @@ async function body(request: Request) { try { return await request.json() as Rec
 export async function GET() {
   const user = await getCurrentUser(); if (!user) return Response.json({ error: 'Authentication required.' }, { status: 401 })
   const tasks = await getTasksCollection(); const items = await tasks.find({ userId: user._id }).sort({ createdAt: -1 }).toArray()
-  return Response.json({ tasks: items.map(responseTask) })
+  return Response.json({ tasks: items.map(responseTask) }, { headers: { 'Cache-Control': 'private, no-store' } })
 }
 
 export async function POST(request: Request) {

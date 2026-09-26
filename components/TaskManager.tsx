@@ -35,7 +35,7 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
     try {
       const savedTheme = localStorage.getItem('theme')
       setTheme(savedTheme === 'light' ? 'light' : 'dark')
-      fetch('/api/tasks').then(response => response.ok ? response.json() : Promise.reject(new Error('Could not load tasks.'))).then(data => setTodos(data.tasks)).catch(error => console.warn(error))
+      fetch('/api/tasks', { cache: 'no-store' }).then(response => response.ok ? response.json() : Promise.reject(new Error('Could not load tasks.'))).then(data => setTodos(data.tasks)).catch(error => console.warn(error))
     } catch (error) {
       console.warn('Could not load saved tasks or theme.', error)
     }
