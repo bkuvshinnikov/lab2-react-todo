@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# Next.js build output and TypeScript cache
+.next/
+out/
+*.tsbuildinfo
+
+# Environment secrets (only the placeholder template is committed)
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
