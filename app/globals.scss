@@ -1,3 +1,13 @@
+$radius-control: 13px;
+
+@mixin action-button($color, $background) {
+  padding: 9px 12px;
+  border-radius: 11px;
+  color: $color;
+  background: $background;
+  font-size: 11px;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -298,8 +308,8 @@ body {
 .app-container .inline-category-manager .category-manager-item { display: flex; width: 100%; justify-content: space-between; min-height: 42px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 13px; color: var(--text); background: var(--item-bg); font-size: 13px; }
 .category-actions { display: inline-flex; gap: 8px; margin-left: 12px; }
 .category-actions .edit-button, .category-actions .delete-button { padding: 9px 12px; border-radius: 11px; font-size: 11px; }
-.category-actions .edit-button { color: #6d8fab; background: rgba(90, 125, 155, 0.12); }
-.category-actions .delete-button { color: #b86666; background: rgba(184, 102, 102, 0.12); }
+.category-actions .edit-button { @include action-button(#6d8fab, rgba(90, 125, 155, 0.12)); }
+.category-actions .delete-button { @include action-button(#b86666, rgba(184, 102, 102, 0.12)); }
 .category-edit-input { min-width: 0; flex: 1; padding: 7px 9px; border: 1px solid var(--border); border-radius: 8px; color: var(--text); background: var(--input-bg); font: inherit; }
 .category-page { min-height: 100vh; display: grid; place-items: center; padding: 24px; color: #f1f3f5; background: linear-gradient(180deg, #0f1217, #171b21); }
 .category-card { width: min(100%, 520px); padding: 36px; border: 1px solid rgba(255,255,255,.09); border-radius: 24px; background: rgba(28,31,38,.92); box-shadow: 0 24px 60px rgba(0,0,0,.28); }
@@ -884,17 +894,9 @@ li input[type='checkbox'] {
   font-size: 11px;
 }
 
-.edit-button {
-  color: #6d8fab;
+.edit-button { @include action-button(#6d8fab, rgba(90, 125, 155, 0.12)); }
 
-  background: rgba(90, 125, 155, 0.12);
-}
-
-.delete-button {
-  color: #b86666;
-
-  background: rgba(184, 102, 102, 0.12);
-}
+.delete-button { @include action-button(#b86666, rgba(184, 102, 102, 0.12)); }
 
 .save-button {
   color: #5b8f7f;
