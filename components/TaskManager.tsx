@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import TodoForm from './TodoForm'
 import TodoItem from './TodoItem'
 import TodoControls from './TodoControls'
@@ -8,7 +9,8 @@ import TodoStats from './TodoStats'
 
 import type { Task, Priority, Category, TaskFilter, CategoryFilter, SortBy, Theme } from '@/types/task'
 
-function TaskManager() {
+function TaskManager({ user }: { user: { name: string; email: string } }) {
+  const router = useRouter()
   const [task, setTask] = useState('')
   const [priority, setPriority] = useState<Priority>('medium')
   const [category, setCategory] = useState<Category>('work')
@@ -281,18 +283,17 @@ function TaskManager() {
             </div>
           </div>
 
-          <button
-            className="theme-button"
-            onClick={() =>
-              setTheme(theme === 'light' ? 'dark' : 'light')
-            }
-          >
-            <span className="theme-icon">
-              {theme === 'light' ? '☾' : '☀'}
-            </span>
-
-            {theme === 'light' ? 'Dark' : 'Light'}
-          </button>
+          <div className="header-actions">
+            <button
+              className="theme-button"
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            >
+              <span className="theme-icon">{theme === 'light' ? '☾' : '☀'}</span>
+              {theme === 'light' ? 'Dark' : 'Light'}
+            </button>
+            <span className="user-name">{user.name}</span>
+            <button className="logout-button" onClick={async () => { await fetch('/api/auth/logout', { method: 'POST' }); router.push('/login'); router.refresh() }}>Log out</button>
+          </div>
         </header>
 
         <section className="dashboard-section">

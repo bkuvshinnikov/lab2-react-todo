@@ -1,146 +1,48 @@
-# React Task Manager
+# Task Manager
 
-A modern task management application built with **React** as part of Laboratory Work No. 2 for the *Web Application Development Tools* course.
+A full-stack Task Manager for the Web Application Development Tools final project.
 
 The project is based on **Variant 10 – ToDo Application**, but was extended with additional functionality.
 
-## Features
+## Current stack
 
-- Add new tasks
-- Add tasks by pressing `Enter`
-- Edit existing tasks
-- Delete tasks
-- Mark tasks as completed
-- Set priority: Low / Medium / High
-- Assign categories: Work / Study / Personal
-- Set due dates
-- Detect overdue tasks
-- Search tasks by text
-- Filter tasks by status
-- Filter tasks by category
-- Sort tasks by priority, due date, and creation order
-- Clear completed tasks
-- Show task statistics
-- Save tasks in `localStorage`
-- Light / Dark theme
-- Save selected theme in `localStorage`
-- Responsive layout
+- Next.js App Router, React and TypeScript
+- MongoDB Atlas with the native MongoDB driver
+- Server-side registration, login, logout and MongoDB sessions
+- Local task UI with light/dark themes, search, filters and sorting
+- CSS in `app/globals.css`
 
 ## Technologies
 
-- React
-- JavaScript
-- HTML
-- CSS
-- Vite
-- localStorage
-
-## Project Structure
-
-```text
-src/
-├── components/
-│   ├── TodoControls.jsx
-│   ├── TodoForm.jsx
-│   ├── TodoItem.jsx
-│   └── TodoStats.jsx
-├── App.jsx
-├── index.css
-└── main.jsx
-```
-
-## Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/bkuvshinnikov/lab2-react-todo.git
-```
-
-Open the project directory:
-
-```bash
-cd lab2-react-todo
-```
-
-Install dependencies:
+## Run locally
 
 ```bash
 npm install
-```
-
-Run the application:
-
-```bash
+cp .env.example .env.local
 npm run dev
 ```
 
-The application will usually be available at:
+Fill `MONGODB_URI` and `MONGODB_DB` in `.env.local`. Keep `.env.local` out of Git.
+Atlas setup is documented in [docs/mongodb-setup.md](docs/mongodb-setup.md).
 
-```text
-http://localhost:5173/
-```
+Open `http://localhost:3000`. Unauthenticated visitors are sent to `/login`.
+Registration is available at `/register`.
 
-## Production Build
-
-To create a production build:
+## Verification
 
 ```bash
-npm run build
+npm run lint
+npm run test:registration
+npm run build -- --webpack
 ```
 
-## Project Passport
+## Structure
 
-**Student:** Boris Kuvshinnikov  
-**Project Name:** React Task Manager  
-**Framework:** React.js  
-**GitHub:** https://github.com/bkuvshinnikov/lab2-react-todo
+- `app/` — pages and API route handlers
+- `components/` — interactive task and authentication UI
+- `lib/` — MongoDB, password and session services
+- `types/` — shared TypeScript models
+- `docs/` — setup and API notes
 
-### Brief Description
-
-A frontend React task management application that allows users to create, edit, complete, organize, search, filter, sort, and delete tasks.
-
-The application stores data locally in the browser using `localStorage`.
-
-## Debugging
-
-The application was tested and debugged in the browser.
-
-Checked functionality:
-
-- Adding new tasks
-- Adding tasks with `Enter`
-- Editing task text
-- Editing priority
-- Editing category
-- Editing due date
-- Completing tasks
-- Deleting tasks
-- Filtering by status
-- Filtering by category
-- Searching tasks
-- Sorting tasks
-- Detecting overdue tasks
-- Clearing completed tasks
-- Saving tasks in `localStorage`
-- Saving the selected Light / Dark theme in `localStorage`
-- Switching between Light and Dark themes
-- Responsive layout
-
-During debugging, a CSS conflict affecting Dark Mode was identified and fixed.
-
-The browser console was checked for errors and the application works correctly.
-
-## Application Type
-
-This project is a **frontend-only React application**.
-
-No backend, external API, or database is required.
-
-## Author
-
-**Boris Kuvshinnikov**
-
-Web Application Development Tools  
-Laboratory Work No. 2  
-Variant 10 – ToDo Application
+Task persistence is still local-first. Moving tasks and categories to MongoDB is
+the next backend phase.

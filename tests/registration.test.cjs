@@ -81,7 +81,7 @@ test('invalid payloads are rejected before hashing or database writes', async ()
   for (const body of [null, [], 12, {}, '{bad', { ...valid, name: ' ' },
     { ...valid, name: 'a'.repeat(101) }, { ...valid, email: 'invalid' },
     { ...valid, email: { $ne: null } }, { ...valid, password: 123 },
-    { ...valid, password: 'a'.repeat(14) }, { ...valid, password: 'a'.repeat(129) },
+    { ...valid, password: 'a'.repeat(8) }, { ...valid, password: 'a'.repeat(129) },
     { ...valid, email: 'a'.repeat(255) + '@example.com' }]) {
     assert.equal((await request(body)).status, 400)
   }
@@ -92,7 +92,7 @@ test('invalid payloads are rejected before hashing or database writes', async ()
 })
 
 test('password boundaries and Unicode are accepted without truncation', async () => {
-  for (const password of ['a'.repeat(15), 'a'.repeat(128), '🔑'.repeat(15)]) {
+  for (const password of ['a'.repeat(9), 'a'.repeat(128), '🔑'.repeat(9)]) {
     const { request, passwords } = setup()
     assert.equal((await request({ ...valid, password })).status, 201)
     assert.equal(passwords[0], password)

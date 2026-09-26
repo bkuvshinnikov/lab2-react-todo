@@ -12,7 +12,7 @@
 
 - Name: trimmed, 1–100 characters.
 - Email: trimmed and lowercased, basic format validation, maximum 254 characters.
-- Password: 15–128 Unicode code points, preserved exactly (including spaces).
+- Password: 9–128 Unicode code points, preserved exactly (including spaces).
 - Maximum JSON body: 8 KiB. Extra fields are ignored and never stored.
 - Passwords use asynchronous Node.js scrypt with a random 16-byte salt and
   parameters `N=131072, r=8, p=1`. The stored format is

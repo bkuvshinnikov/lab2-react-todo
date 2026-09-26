@@ -40,8 +40,8 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Enter a valid email address.' }, { status: 400 })
   }
   const passwordLength = Array.from(password).length
-  if (passwordLength < 15 || passwordLength > 128) {
-    return Response.json({ error: 'Password must contain 15–128 characters.' }, { status: 400 })
+  if (passwordLength < 9 || passwordLength > 128) {
+    return Response.json({ error: 'Password must contain 9–128 characters.' }, { status: 400 })
   }
 
   try {

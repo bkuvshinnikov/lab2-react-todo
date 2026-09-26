@@ -3,6 +3,9 @@ import { createHash, randomBytes } from 'node:crypto'
 import type { OptionalId } from 'mongodb'
 import { getDatabase } from '@/lib/mongodb'
 import type { Session } from '@/types/auth'
+import type { User } from '@/types/user'
+import { cookies } from 'next/headers'
+import { ObjectId } from 'mongodb'
 
 export const SESSION_COOKIE = 'task_manager_session'
 export const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000
@@ -25,4 +28,14 @@ export async function createSession(userId: Session['userId']) {
   const sessions = await getSessionsCollection()
   await sessions.insertOne({ _id: token, userId, tokenHash: hashSessionToken(token), createdAt: now, expiresAt })
   return { token, expiresAt }
+}
+
+export async function getCurrentUser(): Promise<Pick<User, '_id' | 'name' | 'email'> | null> {
+  const token = (await cookies()).get(SESSION_COOKIE)?.value
+  if (!token) return null
+  const sessions = await getSessionsCollection()
+  const session = await sessions.findOne({ tokenHash: hashSessionToken(token), expiresAt: { $gt: new Date() } })
+  if (!session || !ObjectId.isValid(session.userId)) return null
+  const user = await (await getDatabase()).collection<User>('users').findOne({ _id: session.userId })
+  return user ? { _id: user._id, name: user.name, email: user.email } : null
 }
