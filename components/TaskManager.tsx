@@ -21,7 +21,7 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState<SortBy>('default')
 
-  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [editingText, setEditingText] = useState('')
   const [editingPriority, setEditingPriority] = useState<Priority>('medium')
   const [editingCategory, setEditingCategory] = useState<Category>('work')
@@ -29,103 +29,36 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
 
   const [theme, setTheme] = useState<Theme>('dark')
   const [todos, setTodos] = useState<Task[]>([])
-  const [storageLoaded, setStorageLoaded] = useState(false)
 
   useEffect(() => {
-    // Browser storage is unavailable during server rendering. Hydrate once on mount
-    // before enabling persistence, so the initial empty state cannot erase tasks.
     /* eslint-disable react-hooks/set-state-in-effect */
     try {
       const savedTheme = localStorage.getItem('theme')
       setTheme(savedTheme === 'light' ? 'light' : 'dark')
-
-      const now = Date.now()
-      const lastReset = Number(localStorage.getItem('taskManagerLastReset'))
-      if (lastReset && now - lastReset >= 60 * 60 * 1000) {
-        localStorage.removeItem('todos')
-        localStorage.setItem('taskManagerLastReset', now.toString())
-      } else {
-        if (!lastReset) {
-          localStorage.setItem('taskManagerLastReset', now.toString())
-        }
-        const savedTodos: unknown = JSON.parse(localStorage.getItem('todos') || '[]')
-        if (Array.isArray(savedTodos)) {
-          setTodos(savedTodos.filter((todo): todo is Task =>
-            typeof todo === 'object' && todo !== null &&
-            typeof todo.id === 'number' && typeof todo.text === 'string' &&
-            typeof todo.completed === 'boolean' &&
-            (todo.priority === undefined || ['low', 'medium', 'high'].includes(todo.priority)) &&
-            (todo.category === undefined || ['work', 'study', 'personal'].includes(todo.category)) &&
-            (todo.dueDate === undefined || typeof todo.dueDate === 'string')
-          ))
-        }
-      }
+      fetch('/api/tasks').then(response => response.ok ? response.json() : Promise.reject(new Error('Could not load tasks.'))).then(data => setTodos(data.tasks)).catch(error => console.warn(error))
     } catch (error) {
       console.warn('Could not load saved tasks or theme.', error)
     }
-    setStorageLoaded(true)
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [])
 
   useEffect(() => {
-    if (!storageLoaded) return
-    try {
-      localStorage.setItem('todos', JSON.stringify(todos))
-    } catch (error) {
-      console.warn('Could not save tasks.', error)
-    }
-  }, [todos, storageLoaded])
-
-  useEffect(() => {
-    if (!storageLoaded) return
     try {
       localStorage.setItem('theme', theme)
     } catch (error) {
       console.warn('Could not save theme.', error)
     }
-  }, [theme, storageLoaded])
+  }, [theme])
 
-  useEffect(() => {
-    if (!storageLoaded) return
-    // Preserve the original application's hourly reset and minute-by-minute check.
-    const interval = setInterval(() => {
-      try {
-        const now = Date.now()
-        const lastReset = Number(localStorage.getItem('taskManagerLastReset'))
-        if (!lastReset || now - lastReset >= 60 * 60 * 1000) {
-          if (lastReset) {
-            localStorage.removeItem('todos')
-            setTodos([])
-            setEditingId(null)
-            setEditingText('')
-            setEditingPriority('medium')
-            setEditingCategory('work')
-            setEditingDueDate('')
-          }
-          localStorage.setItem('taskManagerLastReset', now.toString())
-        }
-      } catch (error) {
-        console.warn('Could not check task storage expiration.', error)
-      }
-    }, 60 * 1000)
-    return () => clearInterval(interval)
-  }, [storageLoaded])
-
-  const addTodo = () => {
+  const addTodo = async () => {
     if (task.trim() === '') {
       return
     }
 
-    const newTodo: Task = {
-      id: Date.now(),
-      text: task.trim(),
-      completed: false,
-      priority,
-      category,
-      dueDate,
-    }
-
-    setTodos([...todos, newTodo])
+    const response = await fetch('/api/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: task, priority, category, dueDate }) })
+    if (!response.ok) return
+    const { task: newTodo } = await response.json()
+    setTodos(current => [newTodo, ...current])
 
     setTask('')
     setPriority('medium')
@@ -133,18 +66,14 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
     setDueDate('')
   }
 
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter(todo => todo.id !== id))
+  const deleteTodo = async (id: string) => {
+    if ((await fetch(`/api/tasks/${id}`, { method: 'DELETE' })).ok) setTodos(current => current.filter(todo => todo.id !== id))
   }
 
-  const toggleTodo = (id: number) => {
-    setTodos(
-      todos.map(todo =>
-        todo.id === id
-          ? { ...todo, completed: !todo.completed }
-          : todo
-      )
-    )
+  const toggleTodo = async (id: string) => {
+    const todo = todos.find(item => item.id === id); if (!todo) return
+    const response = await fetch(`/api/tasks/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ completed: !todo.completed }) })
+    if (response.ok) setTodos(current => current.map(item => item.id === id ? { ...item, completed: !item.completed } : item))
   }
 
   const startEditing = (todo: Task) => {
@@ -155,24 +84,13 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
     setEditingDueDate(todo.dueDate || '')
   }
 
-  const saveEdit = (id: number) => {
+  const saveEdit = async (id: string) => {
     if (editingText.trim() === '') {
       return
     }
 
-    setTodos(
-      todos.map(todo =>
-        todo.id === id
-          ? {
-              ...todo,
-              text: editingText.trim(),
-              priority: editingPriority,
-              category: editingCategory,
-              dueDate: editingDueDate,
-            }
-          : todo
-      )
-    )
+    const response = await fetch(`/api/tasks/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: editingText, priority: editingPriority, category: editingCategory, dueDate: editingDueDate }) })
+    if (response.ok) setTodos(current => current.map(todo => todo.id === id ? { ...todo, text: editingText.trim(), priority: editingPriority, category: editingCategory, dueDate: editingDueDate } : todo))
 
     cancelEdit()
   }
@@ -185,8 +103,9 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
     setEditingDueDate('')
   }
 
-  const clearCompleted = () => {
-    setTodos(todos.filter(todo => !todo.completed))
+  const clearCompleted = async () => {
+    const response = await fetch('/api/tasks', { method: 'DELETE' })
+    if (response.ok) setTodos(current => current.filter(todo => !todo.completed))
   }
 
   const isOverdue = (todo: Task) => {
@@ -253,11 +172,11 @@ function TaskManager({ user }: { user: { name: string; email: string } }) {
     }
 
     if (sortBy === 'newest') {
-      return b.id - a.id
+      return (b.createdAt || '').localeCompare(a.createdAt || '')
     }
 
     if (sortBy === 'oldest') {
-      return a.id - b.id
+      return (a.createdAt || '').localeCompare(b.createdAt || '')
     }
 
     return 0

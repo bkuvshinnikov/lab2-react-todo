@@ -6,10 +6,11 @@ export type SortBy = 'default' | 'newest' | 'oldest' | 'priority-high' | 'priori
 export type Theme = 'light' | 'dark'
 
 export interface Task {
-  id: number
+  id: string
   text: string
   completed: boolean
   priority?: Priority
   category?: Category
   dueDate?: string
+  createdAt?: string
 }

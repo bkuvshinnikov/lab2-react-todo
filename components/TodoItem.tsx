@@ -2,7 +2,7 @@ import type { Task, Priority, Category } from '@/types/task'
 
 interface TodoItemProps {
   todo: Task
-  editingId: number | null
+  editingId: string | null
   editingText: string
   setEditingText: (value: string) => void
   editingPriority: Priority
@@ -11,11 +11,11 @@ interface TodoItemProps {
   setEditingCategory: (value: Category) => void
   editingDueDate: string
   setEditingDueDate: (value: string) => void
-  toggleTodo: (id: number) => void
+  toggleTodo: (id: string) => void
   startEditing: (todo: Task) => void
-  saveEdit: (id: number) => void
+  saveEdit: (id: string) => void
   cancelEdit: () => void
-  deleteTodo: (id: number) => void
+  deleteTodo: (id: string) => void
   isOverdue: (todo: Task) => boolean
 }
 
